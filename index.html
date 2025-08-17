@@ -387,7 +387,30 @@
             $('#loginError').addClass('hidden');
         }
 
+        function saveDataToStorage() {
+            localStorage.setItem('trendmola_accounts', JSON.stringify(accounts));
+            localStorage.setItem('trendmola_categories', JSON.stringify(categories));
+            console.log('[v0] Data saved to localStorage');
+        }
+
+        function loadDataFromStorage() {
+            const savedAccounts = localStorage.getItem('trendmola_accounts');
+            const savedCategories = localStorage.getItem('trendmola_categories');
+            
+            if (savedAccounts) {
+                accounts = JSON.parse(savedAccounts);
+                console.log('[v0] Loaded accounts from localStorage:', accounts.length);
+            }
+            
+            if (savedCategories) {
+                categories = JSON.parse(savedCategories);
+                console.log('[v0] Loaded categories from localStorage:', categories.length);
+            }
+        }
+
         function initializeApp() {
+            loadDataFromStorage();
+            
             updateCategoryDropdowns();
             
             table = $('#accountsTable').DataTable({
@@ -459,6 +482,7 @@
             if (newCategory && !categories.includes(newCategory)) {
                 categories.push(newCategory);
                 updateCategoryDropdowns();
+                saveDataToStorage();
                 closeCategoryModal();
             }
         }
@@ -481,6 +505,7 @@
                 accounts[currentEditingRow].status = newStatus;
                 table.row(currentEditingRow).data(accounts[currentEditingRow]).draw();
                 updateCounts();
+                saveDataToStorage();
                 closeStatusModal();
             }
         }
@@ -507,6 +532,7 @@
 
                 table.clear().rows.add(accounts).draw();
                 updateCounts();
+                saveDataToStorage();
             };
             reader.readAsArrayBuffer(file);
         }
@@ -533,6 +559,7 @@
             accounts.push(newAccount);
             table.row.add(newAccount).draw();
             updateCounts();
+            saveDataToStorage();
             closeModal();
         }
 
